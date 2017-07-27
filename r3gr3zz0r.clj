@@ -11,7 +11,7 @@
 (def rand_y (unique-random-numbers 100))
 
 ;define r3gr3zz0r
-(defn r3gr3zz0r [known xs ys x_or_y]
+(defn linear_regression [known xs ys x_or_y]
   ;define sums
   (let [x_sum (reduce + xs)
         y_sum (reduce + ys)
@@ -23,11 +23,16 @@
     
     ;check if predicting x or y
      (if (= "x" (clojure.string/lower-case x_or_y))
-       (println (str "y should be: " (+ slope (* intercept known))))
-       (println (str "x should be: " (/ (- known slope) intercept))))))
+       ;print y'
+       (println (str "y' = " (+ slope (* intercept known))))
+       ;print x'
+       (println (str "x' = " (/ (- known slope) intercept))))
+     (println (str "slope = " slope))
+     (println (str "intercept = " intercept))
+    ))
 
-;testing
-(r3gr3zz0r
+;trigger regression
+(linear_regression
   (do (println "What's the known number?") (flush) (Integer. (re-find  #"\d+" (read-line))))
   rand_x
   rand_y
