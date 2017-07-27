@@ -19,17 +19,16 @@
         xx_sum (reduce + (map (fn [n] (* n n)) xs))
         n (count xs)
         slope (float (/ (- (* y_sum xx_sum) (* x_sum xy_sum)) (- (* n xx_sum) (* x_sum x_sum))))
-        intercept (float (/ (- (* n xy_sum) (* x_sum y_sum)) (- (* n xx_sum) (* x_sum x_sum))))]
+        intercept (float (/ (- (* n xy_sum) (* x_sum y_sum)) (- (* n xx_sum) (* x_sum x_sum))))
+        y_ (+ slope (* intercept known))
+        x_ (/ (- known slope) intercept)]
     
     ;check if predicting x or y
      (if (= "x" (clojure.string/lower-case x_or_y))
-       ;print y'
-       (println (str "y' = " (+ slope (* intercept known))))
-       ;print x'
-       (println (str "x' = " (/ (- known slope) intercept))))
-     (println (str "slope = " slope))
-     (println (str "intercept = " intercept))
-    ))
+       ;print y' formula
+       (println (str y_ " = " slope " + " intercept " * " known))
+       ;print x' formula
+       (println (str x_ " = " intercept " / (" known " - " slope ")")))))
 
 ;trigger regression
 (linear_regression
