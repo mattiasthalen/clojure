@@ -1,15 +1,8 @@
-(require '[clojure.set :as set])
 (require '[clojure.string :as string])
 
-;random number generator
-(defn unique-random-numbers [n]
-  (let [a-set (set (take n (repeatedly #(rand-int n))))]
-    (concat a-set (set/difference (set (take n (range)))
-                                  a-set))))
-
 ;generate x & y lists
-(def rand_x (unique-random-numbers 100))
-(def rand_y (unique-random-numbers 100))
+(def rand_x (take 100 (repeatedly #(rand-int 100))))
+(def rand_y (take 100 (repeatedly #(rand-int 100))))
 
 ;define r3gr3zz0r
 (defn linear_regression [known xs ys x_or_y]
