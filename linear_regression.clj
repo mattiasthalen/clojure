@@ -1,4 +1,4 @@
-(require '[clojure.string :as string])
+(require '[clojure.string :as str])
 
 ;generate x & y lists
 (def rand_x (take 100 (repeatedly #(rand-int 100))))
@@ -10,8 +10,8 @@
   (let [x_sum (reduce + xs)
         y_sum (reduce + ys)
         xy_sum (reduce + (map * xs ys))
-        xx_sum (reduce + (map (fn [n] (* n n)) xs))
-        yy_sum (reduce + (map (fn [n] (* n n)) ys))
+        xx_sum (reduce + (map (* % %) xs))
+        yy_sum (reduce + (map (* % %) ys))
         n (count xs)
         
         slope (float (/ (- (* y_sum xx_sum) (* x_sum xy_sum)) (- (* n xx_sum) (* x_sum x_sum))))
@@ -23,7 +23,7 @@
         x_ (/ (- known slope) intercept)]
     
     ;check if predicting x or y
-     (if (= "x" (string/lower-case x_or_y))
+     (if (= "x" (str/lower-case x_or_y))
        ;print y' formula
        (println (str "y' = " y_))
        ;print x' formula
