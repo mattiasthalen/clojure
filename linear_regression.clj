@@ -10,8 +10,8 @@
   (let [x_sum (reduce + xs)
         y_sum (reduce + ys)
         xy_sum (reduce + (map * xs ys))
-        xx_sum (reduce + (map (* % %) xs))
-        yy_sum (reduce + (map (* % %) ys))
+        xx_sum (reduce + (map #(* % %) xs))
+        yy_sum (reduce + (map #(* % %) ys))
         n (count xs)
         
         slope (float (/ (- (* y_sum xx_sum) (* x_sum xy_sum)) (- (* n xx_sum) (* x_sum x_sum))))
