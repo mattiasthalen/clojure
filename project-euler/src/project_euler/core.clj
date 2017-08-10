@@ -22,9 +22,7 @@
             (inc f)))))))
       
 (defn problem-10
-  "Task: What's the sum of all primes below 2 million?
-   Answer: 142913828922.
-   Note: Repl.it is too weak for 2e6."
+  "Task: What's the sum of all primes below 2 million?"
   ([]
    (problem-10 2e6))
   ([x]
