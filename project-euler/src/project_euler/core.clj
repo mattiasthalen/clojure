@@ -1,9 +1,9 @@
 (ns project-euler.core
   (:require [clojure.math.numeric-tower :as math]
-          [clojure.math.combinatorics :as combo]))
+            [clojure.math.combinatorics :as combo]))
 
 (defn primes-below
-  "Generate primes using Sieve of Eratosthenes"
+  "Generate primes below x using Sieve of Eratosthenes"
   [x]
   (let [sieve (->> (range 3 x 2)
                    (cons 2 ,,,)
@@ -12,12 +12,14 @@
     (loop
       [s sieve
        f 3]
-      (if
-        (> (math/expt f 2) x)
-        (persistent! s)
-        (recur
-          (reduce disj! s (range (math/expt f 2) x f))
-          (inc f))))))
+      (let [ff (math/expt f 2)]
+        (if
+          (> ff x)
+          (persistent! s)
+          (recur
+            (->> (range ff x f)
+                 (reduce disj! s ,,,))
+            (inc f)))))))
       
 (defn problem-10
   "Task: What's the sum of all primes below 2 million?
