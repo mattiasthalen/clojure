@@ -1,9 +1,6 @@
 (ns project-euler.core
-  (:gen-class))
-
-(defn ** [x]
-  "Calculate the square of x"
-  (* x x))
+  (:require [clojure.math.numeric-tower :as math]
+          [clojure.math.combinatorics :as combo]))
 
 (defn primes-below
   "Generate primes using Sieve of Eratosthenes"
@@ -16,10 +13,10 @@
       [s sieve
        f 3]
       (if
-        (> (** f) x)
-        (sort (persistent! s))
+        (> (math/expt f 2) x)
+        (persistent! s)
         (recur
-          (reduce disj! s (range (** f) x f))
+          (reduce disj! s (range (math/expt f 2) x f))
           (inc f))))))
       
 (defn problem-10
