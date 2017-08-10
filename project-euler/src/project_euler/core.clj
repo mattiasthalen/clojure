@@ -101,12 +101,43 @@
           @max-palindrom))
 
 (defn problem-4
+  "Find the largest palindrome made from the product of two 3-digit numbers."
   ([] 
    (problem-4 3))
   ([n]
    (max-palindromic-product n)))
 
+(defn problem-5
+ "What is the smallest positive number that is evenly divisible by all of the numbers from 1 to 20?"
+  ([]
+   (problem-5 21))
+  ([x]
+   (reduce math/lcm (range 1 x))))
 
+(defn sum-of-squares 
+  "Return the sum of all squares"
+  [xs]
+  (->> xs
+       (map #(math/expt % 2) ,,,)
+       (reduce + ,,,)))
+
+(defn square-of-sums
+  "Return the square of sum"
+  [xs]
+  (->> xs
+       (reduce + ,,,)
+       (#(math/expt % 2) ,,,)))
+
+(defn problem-6
+  "Find the difference between the sum of the squares of the first one hundred natural numbers and the square of the sum."
+  ([]
+   (problem-6 100))
+  ([n]
+   (->> n
+        (inc ,,,)
+        (range 1 ,,,)
+        (#(- (square-of-sums %)
+             (sum-of-squares %)) ,,,))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
