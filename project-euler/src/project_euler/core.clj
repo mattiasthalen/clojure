@@ -31,14 +31,16 @@
         (reduce + ,,,))))
 
 (defn prime?
-  "Function to validate if a number is a prime number"
+  "Validate if a number is a prime number"
   [x]
-  (cond
-    (<= x 1) false
-    (= x 2) true
-    :else (not-any?
-            #(zero? (mod x %))
-            (cons 2 (range 3 (inc (Math/sqrt x)) 2)))))
+  (cond (<= x 1) false
+        (= x 2) true
+        :else (not-any?
+                #(zero? (mod x %))
+                (cons 2
+                      (range 3
+                             (inc (Math/sqrt x))
+                             2)))))
 
 (defn prime-factors
   "Find the prime factors of x"
@@ -133,11 +135,20 @@
   ([]
    (problem-6 100))
   ([n]
-   (->> n
-        (inc ,,,)
-        (range 1 ,,,)
-        (#(- (square-of-sums %)
-             (sum-of-squares %)) ,,,))))
+   (let [xs (range (inc n))
+         sq-sum (square-of-sums xs)
+         sum-sq  (sum-of-squares xs)]
+     (- sq-sum sum-sq))))
+
+(defn problem-7
+  "What is the 10 001st prime number?"
+  ([]
+   (problem-7 10001))
+  ([n]
+   (->> (iterate inc 2)
+        (filter prime? ,,,)
+        (drop (dec n) ,,,)
+        (first ,,,))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
