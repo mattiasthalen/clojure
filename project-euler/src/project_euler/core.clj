@@ -152,11 +152,11 @@
 
 (defn partition-rows
   "Partition matrix row by row"
-  [n step coll]
+  [n step matrix]
   (if
-    (pos? (count coll))
-    (concat (partition n step (first coll))
-            (partition-rows n step (rest coll)))
+    (pos? (count matrix))
+    (concat (partition n step (first matrix))
+            (partition-rows n step (rest matrix)))
     []))
 
 (defn transpose
@@ -166,35 +166,35 @@
 
 (defn partition-columns
   "Partition matrix column by column"
-  [n step coll]
-  (partition-rows n step (transpose coll)))
+  [n step matrix]
+  (partition-rows n step (transpose matrix)))
 
 (defn left-diagonals
   "Get the left diagonals in a matrix"
-  [coll]
-  (let [rows (count coll)
-        columns (count (first coll))]
+  [matrix]
+  (let [rows (count matrix)
+        columns (count (first matrix))]
     (->> (for [row (range rows)
                column (range columns)]
-           {(+ row (- columns column)) [(nth (nth coll row) column)]})
+           {(+ row (- columns column)) [(nth (nth matrix row) column)]})
          (apply merge-with into ,,,)
          (vals ,,,))))
 
 (defn right-diagonals
   "Get the right diagonals in a matrix"
-  [coll]
-  (left-diagonals (reverse coll)))
+  [matrix]
+  (left-diagonals (reverse matrix)))
 
 (defn diagonals
   "Get the diagonals in a matrix"
-  [coll]
-  (concat (left-diagonals coll)
-          (right-diagonals coll)))
+  [matrix]
+  (concat (left-diagonals matrix)
+          (right-diagonals matrix)))
 
 (defn partition-diagonals
   "Partition matrix diagonal by diagonal"
-  [n step coll]
-  (partition-rows n step (diagonals coll)))
+  [n step matrix]
+  (partition-rows n step (diagonals matrix)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; PROBLEMS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -314,9 +314,9 @@
                 [20 69 36 41 72 30 23 88 34 62 99 69 82 67 59 85 74  4 36 16]
                 [20 73 35 29 78 31 90  1 74 31 49 71 48 86 81 16 23 57  5 54]
                 [ 1 70 54 71 83 51 54 69 16 92 33 48 61 43 52  1 89 19 67 48]]))
-  ([m]
+  ([matrix]
    (reduce max
            (map product
-                (concat (partition-rows 4 1 m)
-                        (partition-columns 4 1 m)
-                        (partition-diagonals 4 1 m))))))
+                (concat (partition-rows 4 1 matrix)
+                        (partition-columns 4 1 matrix)
+                        (partition-diagonals 4 1 matrix))))))
