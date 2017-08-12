@@ -218,28 +218,6 @@
        (filter #(factor? % x) ,,,)
        (mapcat (fn [y] [y (/ x y)]) ,,,)))
 
-(defn factors-v2
-  "Count factors in x"
-  [x]
-  (let [ans (atom 1)
-        x-e3rd (math/expt x (/ 1 3))
-        primes (primes-below x-e3rd)]
-    (for [p primes
-          :let [count (atom 1)]
-          :when (< (math/expt p 3) x)]
-      (do 
-      (loop [y x]
-        (when
-          (zero? (mod y p))
-          (swap! count inc)
-          (recur (/ y p))))
-      (swap! ans * @count)))
-
-    (cond
-      (prime? x) (* @ans 2)
-      (prime? (math/sqrt x)) (* @ans 3)
-      (not= x 1) (* @ans 4))))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; PROBLEMS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
