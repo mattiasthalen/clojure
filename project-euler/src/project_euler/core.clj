@@ -61,18 +61,17 @@
       
         (loop
           [a start]
-          (when
-            (>= a stop)
+          (when (>= a stop)
             (loop [b start]
               (let [ab (* a b)]
-                (when
-                  (and
-                    (< a b)
-                    (> ab @max-palindrom))
-                  (if
-                    (palindrome? ab)
+                (when (and (< a b)
+                           (> ab @max-palindrom))
+                  
+                  (if (palindrome? ab)
                     (reset! max-palindrom ab))
+                  
                   (recur (dec b)))))
+            
             (recur (dec a))))
             
           @max-palindrom))
@@ -114,20 +113,19 @@
   (let [abc (atom [])]
     (loop
       [a 1]
-      (when
-        (<= a (/ x 3))
+      (when (<= a (/ x 3))
         (loop
           [b (inc a)]
           (let [c (- x a b)
                 a2 (* a a)
                 b2 (* b b)
                 c2 (* c c)]
-            (when
-              (<= b (/ x 2))
-              (if
-                (= c2 (+ a2 b2))
+            
+            (when (<= b (/ x 2))
+              (if (= c2 (+ a2 b2))
                 (reset! abc [a b c])
                 (recur (inc b))))))
+        
       (recur (inc a))))
     (reduce * @abc)))
 
@@ -142,19 +140,16 @@
       [s sieve
        f 3]
       (let [ff (square f)]
-        (if
-          (> ff x)
+        (if (> ff x)
           (persistent! s)
-          (recur
-            (->> (range ff x f)
-                 (reduce disj! s ,,,))
-            (inc f)))))))
+          (recur (->> (range ff x f)
+                      (reduce disj! s ,,,))
+                 (inc f)))))))
 
 (defn partition-rows
   "Partition matrix row by row"
   [n step matrix]
-  (if
-    (pos? (count matrix))
+  (if (pos? (count matrix))
     (concat (partition n step (first matrix))
             (partition-rows n step (rest matrix)))
     []))
@@ -195,6 +190,55 @@
   "Partition matrix diagonal by diagonal"
   [n step matrix]
   (partition-rows n step (diagonals matrix)))
+
+(defn triangulars
+  ([]
+   (->> (triangulars 1 2)
+        (concat [1] ,,,)))
+  ([x y]
+   (let [z (+ x y)]
+     (->> y
+          (inc ,,,)
+          (triangulars z ,,,)
+          (cons z ,,,)
+          (lazy-seq ,,,)))))
+
+(defn factor?
+  "Check if y is a factor of x"
+  [y x]
+  (zero? (rem x y)))
+
+(defn factors
+  "Generate list of factors in x"
+  [x]
+  (->> x
+       (math/sqrt ,,,)
+       (inc ,,,)
+       (range 1 ,,,)
+       (filter #(factor? % x) ,,,)
+       (mapcat (fn [y] [y (/ x y)]) ,,,)))
+
+(defn factors-v2
+  "Count factors in x"
+  [x]
+  (let [ans (atom 1)
+        x-e3rd (math/expt x (/ 1 3))
+        primes (primes-below x-e3rd)]
+    (for [p primes
+          :let [count (atom 1)]
+          :when (< (math/expt p 3) x)]
+      (do 
+      (loop [y x]
+        (when
+          (zero? (mod y p))
+          (swap! count inc)
+          (recur (/ y p))))
+      (swap! ans * @count)))
+
+    (cond
+      (prime? x) (* @ans 2)
+      (prime? (math/sqrt x)) (* @ans 3)
+      (not= x 1) (* @ans 4))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; PROBLEMS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -320,3 +364,10 @@
                 (concat (partition-rows 4 1 matrix)
                         (partition-columns 4 1 matrix)
                         (partition-diagonals 4 1 matrix))))))
+
+(defn problem-12
+ "What is the value of the first triangle number to have over five hundred divisors?"
+  ([]
+   (problem-12 500))
+  ([n]
+   (first (drop-while #(< (count (factors %)) n) (triangulars)))))
