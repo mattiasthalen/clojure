@@ -3,6 +3,22 @@
             [clojure.math.combinatorics :as combo]
             [clojure.string :as string]))
 
+(def primes
+  "Lazy sequence of all the prime numbers."
+  (concat 
+   [2 3 5 7]
+   (lazy-seq
+    (let [primes-from
+	  (fn primes-from [n [f & r]]
+	    (if (some #(zero? (rem n %))
+		      (take-while #(<= (* % %) n) primes))
+	      (recur (+ n f) r)
+	      (lazy-seq (cons n (primes-from (+ n f) r)))))
+	  wheel (cycle [2 4 2 4 6 2 6 4 2 4 6 6 2 6  4  2
+			6 4 6 8 4 2 4 2 4 8 6 4 6 2  4  6
+			2 6 6 4 2 4 6 2 6 4 2 4 2 10 2 10])]
+      (primes-from 11 wheel)))))
+
 (defn sum
   "Return sum of coll"
   [xs]
@@ -14,13 +30,18 @@
     [0 1]
     (map + (rest fibs) fibs)))
 
+(defn factor?
+  "Check if y is a factor of x"
+  [y x]
+  (zero? (rem x y)))
+
 (defn prime?
   "Validate if a number is a prime number"
   [x]
   (cond (<= x 1) false
         (= x 2) true
         :else (not-any?
-                #(zero? (mod x %))
+                #(factor? % x)
                 (cons 2
                       (range 3
                              (inc (Math/sqrt x))
@@ -34,7 +55,7 @@
         (inc xm)
         (range 3 xm 2)
         (cons 2 xm)
-        (filter #(zero? (mod x %)) xm)
+        (filter #(factor? % x) xm)
         (filter #(prime? %) xm)))
 
 (defn palindrome? 
@@ -191,32 +212,38 @@
   [n step matrix]
   (partition-rows n step (diagonals matrix)))
 
-(defn triangulars
-  ([]
-   (->> (triangulars 1 2)
-        (concat [1] ,,,)))
-  ([x y]
-   (let [z (+ x y)]
-     (->> y
-          (inc ,,,)
-          (triangulars z ,,,)
-          (cons z ,,,)
-          (lazy-seq ,,,)))))
+(defn triangular
+  "Get the nth triangular number"
+  [i]
+  (-> i
+      (inc ,,,)
+      (/ ,,, 2)
+      (* ,,, i)))
 
-(defn factor?
-  "Check if y is a factor of x"
-  [y x]
-  (zero? (rem x y)))
+(def triangulars
+  "Lazy seq of triangular numbers"
+  (->> (iterate inc 1)
+       (map triangular ,,,)))
+
+(defn factorize
+  "Factorize x"
+  [x]
+  (loop [y x [p & ps] primes factors []]
+    (cond (= 1 y) factors
+          (factor? p y) (recur (/ y p)
+                               primes
+                               (conj factors p))
+          :else (recur y ps factors))))
 
 (defn factors
-  "Generate list of factors in x"
+  "Count the factors in x"
   [x]
   (->> x
-       (math/sqrt ,,,)
-       (inc ,,,)
-       (range 1 ,,,)
-       (filter #(factor? % x) ,,,)
-       (mapcat (fn [y] [y (/ x y)]) ,,,)))
+       (factorize ,,,)
+       (frequencies ,,,)
+       (vals ,,,)
+       (map inc ,,,)
+       (product ,,,)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; PROBLEMS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -239,7 +266,7 @@
   ([x]
    (->> fibs
         (filter even? ,,,)
-        (take-while (partial >= x) ,,,)
+        (take-while #(< % x) ,,,)
         (sum ,,,))))
 
 (defn problem-3
@@ -348,4 +375,4 @@
   ([]
    (problem-12 500))
   ([n]
-   (first (drop-while #(< (count (factors %)) n) (triangulars)))))
+   (first (drop-while #(< (factors %) n) triangulars))))
