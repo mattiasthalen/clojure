@@ -1,9 +1,9 @@
 (ns project-euler.core
+  
   (:require 
             [clojure.string :as string])
-  (:use clojure.math.combinatorics
-        clojure.math.numeric-tower
-        clojure.pprint
+  
+  (:use clojure.math.numeric-tower
         clojure.set))
 
 (defn square
