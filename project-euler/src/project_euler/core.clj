@@ -1,7 +1,15 @@
 (ns project-euler.core
-  (:require [clojure.math.numeric-tower :as math]
-            [clojure.math.combinatorics :as combo]
-            [clojure.string :as string]))
+  (:require 
+            [clojure.string :as string])
+  (:use clojure.math.combinatorics
+        clojure.math.numeric-tower
+        clojure.pprint
+        clojure.set))
+
+(defn square
+  "Return the square of x"
+  [x]
+  (* x x))
 
 (def primes
   "Lazy sequence of all the prime numbers."
@@ -9,7 +17,7 @@
           (lazy-seq
             (let [primes-from (fn primes-from [n [f & r]]
                                 (if (some #(zero? (rem n %))
-                                          (take-while #(<= (math/sqrt %) n)
+                                          (take-while #(<= (sqrt %) n)
                                                       primes))
                                   (recur (+ n f) r)
                                   (lazy-seq (cons n
@@ -31,10 +39,10 @@
     [0 1]
     (map + (rest fibs) fibs)))
 
-(defn factor?
-  "Check if y is a factor of x"
-  [y x]
-  (zero? (rem x y)))
+(defn factor-of?
+  "Check if f is a factor of n"
+  [f n]
+  (zero? (rem n f)))
 
 (defn prime?
   "Validate if a number is a prime number"
@@ -42,21 +50,21 @@
   (cond (<= x 1) false
         (= x 2) true
         :else (not-any?
-                #(factor? % x)
+                #(factor-of? % x)
                 (cons 2
                       (range 3
-                             (inc (Math/sqrt x))
+                             (inc (sqrt x))
                              2)))))
 
 (defn prime-factors
   "Find the prime factors of x"
   [x]
   (as-> x xm
-        (math/sqrt xm)
+        (sqrt xm)
         (inc xm)
         (range 3 xm 2)
         (cons 2 xm)
-        (filter #(factor? % x) xm)
+        (filter #(factor-of? % x) xm)
         (filter #(prime? %) xm)))
 
 (defn palindrome? 
@@ -70,13 +78,13 @@
   "Find the largest palindromic product of n digit factors"
   [n]
   (let [start (->> n
-                   (math/expt 10 ,,,)
+                   (expt 10 ,,,)
                    (int ,,,)
                    (dec ,,,))
         
         stop (->> n
                   (dec ,,,)
-                  (math/expt 10 ,,,)
+                  (expt 10 ,,,)
                   (int ,,,))
         
         max-palindrom (atom 0)]
@@ -98,11 +106,6 @@
             
           @max-palindrom))
 
-(defn square
-  "Return the square of x"
-  [x]
-  (* x x))
-
 (defn sum-of-squares 
   "Return the sum of all squares"
   [xs]
@@ -119,8 +122,8 @@
 
 (defn digits
   "Return a lazy seq of all the digits in x"
-  [x]
-  (->> x
+  [n]
+  (->> n
        (str ,,,)
        (map (comp read-string str) ,,,)))
 
@@ -131,20 +134,20 @@
 
 (defn pythagorian-triple-product
   "Using x, calculate the product of the Pythagorian triple."
-  [x]
+  [n]
   (let [abc (atom [])]
     (loop
       [a 1]
-      (when (<= a (/ x 3))
+      (when (<= a (/ n 3))
         (loop
           [b (inc a)]
-          (let [c (- x a b)
-                a2 (* a a)
-                b2 (* b b)
-                c2 (* c c)]
+          (let [c (- n a b)
+                aa (square a )
+                bb (square b)
+                cc (square c)]
             
-            (when (<= b (/ x 2))
-              (if (= c2 (+ a2 b2))
+            (when (<= b (/ n 2))
+              (if (= cc (+ aa bb))
                 (reset! abc [a b c])
                 (recur (inc b))))))
         
@@ -153,8 +156,8 @@
 
 (defn primes-below
   "Generate primes below x using Sieve of Eratosthenes"
-  [x]
-  (let [sieve (->> (range 3 x 2)
+  [n]
+  (let [sieve (->> (range 3 n 2)
                    (cons 2 ,,,)
                    (set ,,,)
                    (transient ,,,))]
@@ -162,9 +165,9 @@
       [s sieve
        f 3]
       (let [ff (square f)]
-        (if (> ff x)
+        (if (> ff n)
           (persistent! s)
-          (recur (->> (range ff x f)
+          (recur (->> (range ff n f)
                       (reduce disj! s ,,,))
                  (inc f)))))))
 
@@ -178,8 +181,8 @@
 
 (defn transpose
   "Transpose a matrix"
-  [m]
-  (apply mapv vector m))
+  [matrix]
+  (apply mapv vector matrix))
 
 (defn partition-columns
   "Partition matrix column by column"
@@ -190,10 +193,13 @@
   "Get the left diagonals in a matrix"
   [matrix]
   (let [rows (count matrix)
-        columns (count (first matrix))]
+        columns (count (first matrix))
+        cell (fn [m r c] (nth (nth m r) c))]
+    
     (->> (for [row (range rows)
                column (range columns)]
-           {(+ row (- columns column)) [(nth (nth matrix row) column)]})
+           {(+ row (- columns column)) [(cell matrix row column)]})
+         
          (apply merge-with into ,,,)
          (vals ,,,))))
 
@@ -227,19 +233,19 @@
        (map triangular ,,,)))
 
 (defn factorize
-  "Factorize x"
-  [x]
-  (loop [y x [p & ps] primes factors []]
-    (cond (= 1 y) factors
-          (factor? p y) (recur (/ y p)
+  "Factorize n"
+  [n]
+  (loop [i n [p & ps] primes factors []]
+    (cond (= 1 i) factors
+          (factor-of? p i) (recur (/ i p)
                                primes
                                (conj factors p))
-          :else (recur y ps factors))))
+          :else (recur i ps factors))))
 
 (defn factors
   "Count the factors in x"
-  [x]
-  (->> x
+  [n]
+  (->> n
        (factorize ,,,)
        (frequencies ,,,)
        (vals ,,,)
@@ -248,9 +254,9 @@
 
 (defn collatz
   "Starting from x, return the collatz collection"
-  [x]
+  [n]
   (let [coll (atom [])]
-    (loop [i x]
+    (loop [i n]
       (swap! coll conj i)
       (when (> i 1)
         (if (even? i)
@@ -260,30 +266,30 @@
 
 (defn collatz-len
   "Get the length Collatz chain starting at x."
-  [x]
-  (->> x
+  [n]
+  (->> n
        (collatz ,,,)
        (count ,,,)
-       (vector x ,,,)))
+       (vector n ,,,)))
 
 (defn factorial
-  "Calculate the factorial for x"
-  [x]
-  (->> x
+  "Calculate the factorial for n"
+  [n]
+  (->> n
        (bigdec ,,,)
        (inc ,,,)
        (range 1M ,,,)
        (product ,,,)))
 
-(defn combinations
-  "Return the combinations of x y"
-  [x y]
+(defn combination
+  "Return the combination of n k"
+  [n k]
   (cond
-    (zero? x) 0
-    (zero? y) 1
-    :else (/ (factorial x)
-             (* (factorial (- x y))
-                (factorial y)))))
+    (zero? n) 0
+    (zero? k) 1
+    :else (/ (factorial n)
+             (* (factorial (- n k))
+                (factorial k)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; PROBLEMS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -293,28 +299,29 @@
   "Find the sum of all the multiples of 3 or 5 below 1000."
   ([]
    (problem-1 1000))
-  ([x]
-   (->> (range x)
-        (filter #(zero? (min (mod % 3)
-                             (mod % 5))) ,,,)
+  ([n]
+   (->> (range n)
+        (filter #(or (factor-of? 3 %)
+                     (factor-of? 5 %))
+                ,,,)
         (sum ,,,))))
 
 (defn problem-2
   "By considering the terms in the Fibonacci sequence whose values do not exceed four million, find the sum of the even-valued terms."
   ([]
    (problem-2 4e6))
-  ([x]
+  ([n]
    (->> fibs
         (filter even? ,,,)
-        (take-while #(< % x) ,,,)
+        (take-while #(< % n) ,,,)
         (sum ,,,))))
 
 (defn problem-3
   "What is the largest prime factor of the number 600851475143?"
   ([]
    (problem-3 600851475143))
-  ([x]
-   (->> x
+  ([n]
+   (->> n
         (prime-factors ,,,)
         (reduce max ,,,))))
 
@@ -329,8 +336,8 @@
  "What is the smallest positive number that is evenly divisible by all of the numbers from 1 to 20?"
   ([]
    (problem-5 21))
-  ([x]
-   (reduce math/lcm (range 1 x))))
+  ([n]
+   (reduce lcm (range 1 n))))
 
 (defn problem-6
   "Find the difference between the sum of the squares of the first one hundred natural numbers and the square of the sum."
@@ -356,8 +363,8 @@
   "Find the thirteen adjacent digits in the 1000-digit number that have the greatest product. What is the value of this product?"
   ([]
    (problem-8 7316717653133062491922511967442657474235534919493496983520312774506326239578318016984801869478851843858615607891129494954595017379583319528532088055111254069874715852386305071569329096329522744304355766896648950445244523161731856403098711121722383113622298934233803081353362766142828064444866452387493035890729629049156044077239071381051585930796086670172427121883998797908792274921901699720888093776657273330010533678812202354218097512545405947522435258490771167055601360483958644670632441572215539753697817977846174064955149290862569321978468622482839722413756570560574902614079729686524145351004748216637048440319989000889524345065854122758866688116427171479924442928230863465674813919123162824586178664583591245665294765456828489128831426076900422421902267105562632111110937054421750694165896040807198403850962455444362981230987879927244284909188845801561660979191338754992005240636899125607176060588611646710940507754100225698315520005593572972571636269561882670428252483600823257530420752963450))
-  ([x]
-   (->> x
+  ([n]
+   (->> n
         (str ,,,)
         (digits ,,,)
         (partition 13 1 ,,,)
@@ -368,15 +375,15 @@
   "There exists exactly one Pythagorean triplet for which a + b + c = 1000. Find the product abc."
   ([]
    (problem-9 1000))
-  ([x]
-   (pythagorian-triple-product x)))
+  ([n]
+   (pythagorian-triple-product n)))
 
 (defn problem-10
   "Find the sum of all the primes below two million."
   ([]
    (problem-10 2e6))
-  ([x]
-   (->> x
+  ([n]
+   (->> n
         (primes-below ,,,)
         (sum ,,,))))
 
@@ -534,8 +541,8 @@
   "Which starting number, under one million, produces the longest chain?"
   ([]
    (problem-14 1e6))
-  ([x]
-   (->> x
+  ([n]
+   (->> n
         (range 1 ,,,)
         (map collatz-len ,,,)
         (apply max-key second ,,,)
@@ -546,4 +553,13 @@
   ([]
    (problem-15 20))
   ([n]
-   (combinations (* n 2) n)))
+   (combination (* n 2) n)))
+
+(defn problem-16
+  "What is the sum of the digits of the number 2^1000?"
+  ([]
+   (problem-16 (expt 2 1000)))
+  ([n]
+   (->> n
+        (digits ,,,)
+        (sum ,,,))))
