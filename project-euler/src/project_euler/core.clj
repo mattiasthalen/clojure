@@ -120,7 +120,7 @@
        (sum ,,,)
        (square ,,,)))
 
-(defn digits
+(defn digits-of
   "Return a lazy seq of all the digits in x"
   [n]
   (->> n
@@ -366,7 +366,7 @@
   ([n]
    (->> n
         (str ,,,)
-        (digits ,,,)
+        (digits-of ,,,)
         (partition 13 1 ,,,)
         (map #(product %) ,,,)
         (reduce max ,,,))))
@@ -561,5 +561,5 @@
    (problem-16 (expt 2 1000)))
   ([n]
    (->> n
-        (digits ,,,)
+        (digits-of ,,,)
         (sum ,,,))))
