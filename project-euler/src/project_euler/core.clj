@@ -257,6 +257,15 @@
           (recur (/ i 2))
           (recur (inc (* i 3))))))
     @coll))
+
+(defn collatz-len
+  "Get the length Collatz chain starting at x."
+  [x]
+  (->> x
+       (collatz ,,,)
+       (count ,,,)
+       (vector x ,,,)))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; PROBLEMS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -507,9 +516,12 @@
   ([]
    (problem-14 1e6))
   ([x]
+   (let [max-second (fn [memo z]
+                      (if (> (second z)
+                             (second memo))
+                        z memo))]
    (->> x
         (range 1 ,,,)
-        (map #(vector % (count (collatz %))) ,,,)
-        (sort-by second ,,,)
-        (last ,,,)
-        (first ,,,))))
+        (map collatz-len ,,,)
+        (reduce max-second ,,,)
+        (first ,,,)))))
