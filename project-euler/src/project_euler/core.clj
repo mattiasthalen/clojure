@@ -266,6 +266,25 @@
        (count ,,,)
        (vector x ,,,)))
 
+(defn factorial
+  "Calculate the factorial for x"
+  [x]
+  (->> x
+       (bigdec ,,,)
+       (inc ,,,)
+       (range 1M ,,,)
+       (product ,,,)))
+
+(defn combinations
+  "Return the combinations of x y"
+  [x y]
+  (cond
+    (zero? x) 0
+    (zero? y) 1
+    :else (/ (factorial x)
+             (* (factorial (- x y))
+                (factorial y)))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; PROBLEMS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -516,12 +535,15 @@
   ([]
    (problem-14 1e6))
   ([x]
-   (let [max-second (fn [memo z]
-                      (if (> (second z)
-                             (second memo))
-                        z memo))]
    (->> x
         (range 1 ,,,)
         (map collatz-len ,,,)
-        (reduce max-second ,,,)
-        (first ,,,)))))
+        (apply max-key second ,,,)
+        (first ,,,))))
+
+(defn problem-15
+  "How many such routes are there through a 20×20 grid?"
+  ([]
+   (problem-15 20))
+  ([n]
+   (combinations (* n 2) n)))
