@@ -8,4 +8,5 @@
                  [org.clojure/math.combinatorics "0.1.4"]]
   :main ^:skip-aot project-euler.core
   :target-path "target/%s"
-  :profiles {:uberjar {:aot :all}})
+  :profiles {:uberjar {:aot :all}}
+  :jvm-opts ["-Xmx768M"])

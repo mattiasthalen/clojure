@@ -246,6 +246,17 @@
        (map inc ,,,)
        (product ,,,)))
 
+(defn collatz
+  "Starting from x, return the collatz collection"
+  [x]
+  (let [coll (atom [])]
+    (loop [i x]
+      (swap! coll conj i)
+      (when (> i 1)
+        (if (even? i)
+          (recur (/ i 2))
+          (recur (inc (* i 3))))))
+    @coll))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; PROBLEMS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -484,9 +495,21 @@
   ([coll]
    (->> coll
         (map str ,,,)
-        (map #(subs % 0 13) ,,,)
+        (map #(subs % 0 12) ,,,)
         (map read-string ,,,)
         (sum ,,,)
         (str ,,,)
         (#(subs % 0 10) ,,,)
         (read-string ,,,))))
+
+(defn problem-14
+  "Which starting number, under one million, produces the longest chain?"
+  ([]
+   (problem-14 1e6))
+  ([x]
+   (->> x
+        (range 1 ,,,)
+        (map #(vector % (count (collatz %))) ,,,)
+        (sort-by second ,,,)
+        (last ,,,)
+        (first ,,,))))
